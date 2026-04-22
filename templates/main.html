@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud File Manager</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <script type="module" src="/static/firebase-login.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Cloud File Manager</h1>
+
+    <!--Login-->
+    <div id="login-box">
+        <h3>Sign In / Register</h3>
+
+        <input id="email" type="email" placeholder="Enter email">
+        <input id="password" type="password" placeholder="Enter password">
+
+        <div>
+            <button id="login">Sign In</button>
+            <button id="sign-up">Create Account</button>
+        </div>
+    </div>
+
+
+    <div id="user-box" hidden>
+
+        <p><strong id="user-email"></strong></p>
+        <button id="sign-out" class="logout">Log Out</button>
+
+
+        {% if error_message %}
+            <p class="error"> {{ error_message }}</p>
+        {% endif %}
+
+
+        {% if error_message and "File exists" in error_message %}
+        <div class="error">
+             File already exists. Overwrite?
+
+            <form action="/upload-file" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <input type="hidden" name="overwrite" value="true">
+                <button type="submit">Yes, Overwrite</button>
+            </form>
+
+            <a href="/?path={{ current_path }}">
+                <button type="button">Cancel</button>
+            </a>
+        </div>
+        {% endif %}
+
+
+        <div class="section">
+            <h3>Current Location: {{ current_path }}</h3>
+
+            {% if current_path != "/" %}
+                {% set parent = current_path.rsplit('/', 1)[0] %}
+                {% if parent == "" %}
+                    {% set parent = "/" %}
+                {% endif %}
+                <a class="back" href="/?path={{ parent }}">⬅ Back</a>
+            {% endif %}
+        </div>
+
+
+        <div class="section">
+
+            <!--Search -->
+            <form method="get">
+                <input type="text" name="search" placeholder="Search files">
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <button type="submit">Search</button>
+            </form>
+
+
+            <form method="get">
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <select name="sort">
+                    <option value="">Sort</option>
+                    <option value="name">Name</option>
+                    <option value="date">Date</option>
+                </select>
+                <button type="submit">Apply</button>
+            </form>
+
+        </div>
+
+        <!--Create folder-->
+        <div class="section">
+            <h3>Create Folder</h3>
+            <form action="/create-folder" method="post">
+                <input name="folder_name" type="text" placeholder="Folder name" required>
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <button type="submit">Add Folder</button>
+            </form>
+        </div>
+
+
+        <div class="section">
+            <h3>Upload File</h3>
+            <form action="/upload-file" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <input type="hidden" name="path" value="{{ current_path }}">
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+
+
+        <div class="section">
+            <h3>Folders</h3>
+
+            {% for folder in folders %}
+                <div class="folder">
+
+                    <a href="/?path={{ current_path.rstrip('/') }}/{{ folder.name }}">
+                        📁 {{ folder.name }}
+                    </a>
+
+                    <form action="/delete-folder" method="post">
+                        <input type="hidden" name="folder_name" value="{{ folder.name }}">
+                        <input type="hidden" name="path" value="{{ current_path }}">
+                        <button type="submit" class="logout">Delete</button>
+                    </form>
+
+                </div>
+            {% else %}
+                <p>No folders yet</p>
+            {% endfor %}
+        </div>
+
+
+        <div class="section">
+            <h3>Files</h3>
+
+            {% for file in files %}
+                <div class="folder">
+
+
+                    <div class="file-name">
+                         {{ file.name }}
+
+                        {% if file.is_duplicate %}
+                            <span class="duplicate"> Duplicate</span>
+                        {% endif %}
+                    </div>
+
+
+                    <div class="file-meta">
+                        Size: {{ (file.size / 1024) | round(2) }} KB |
+                        Type: {{ file.type }} |
+                        Uploaded: {{ file.uploaded_at }}
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="file-actions">
+
+
+                        <a href="/view-file?filename={{ file.name }}&path={{ current_path }}" target="_blank">
+                            <button type="button"> View</button>
+                        </a>
+
+                        <!--Download -->
+                        <a href="/download-file?filename={{ file.name }}&path={{ current_path }}">
+                            <button type="button"> Download</button>
+                        </a>
+
+                        <!--Delete-->
+                        <form action="/delete-file" method="post">
+                            <input type="hidden" name="filename" value="{{ file.name }}">
+                            <input type="hidden" name="path" value="{{ current_path }}">
+                            <button type="submit" class="logout">Delete</button>
+                        </form>
+
+                    </div>
+
+                </div>
+            {% else %}
+                <p>No files uploaded</p>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
