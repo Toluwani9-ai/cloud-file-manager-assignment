@@ -32,5 +32,3 @@ Metadata is stored in MongoDB.
 Notes
 Azurite must be running before starting the application.
 Ensure MongoDB and Firebase are correctly configured.
-
-
