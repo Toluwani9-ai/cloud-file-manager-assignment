@@ -26,11 +26,11 @@ Authentication
 Users log in via Firebase Authentication. Tokens are stored in cookies and verified by the backend.
 
 Storage
-File content is stored using Azurite (simulating Azure Blob Storage). Metadata is stored in
-MongoDB.
+File content is stored using Azurite (simulating Azure Blob Storage).
+Metadata is stored in MongoDB.
 
 Notes
 Azurite must be running before starting the application.
 Ensure MongoDB and Firebase are correctly configured.
 
-dd7bf2b55fb4bd58
+
