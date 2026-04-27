@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Cloud File Manager
 
 Overview
@@ -32,3 +33,7 @@ Notes
 Azurite must be running before starting the application.
 Ensure MongoDB and Firebase are correctly configured.
 
+=======
+# CSP_Assignment2_3050667
+Cloud File Manager using FastAPI, MongoDB, Firebase, and Azure Blob Storage (Azurite)
+>>>>>>> 26259456c8a4340dd2d0299edd7bf2b55fb4bd58
